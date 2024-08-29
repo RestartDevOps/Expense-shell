@@ -36,18 +36,21 @@ CHECK_ROOT
 dnf list installed mysql 
 if [ $? -ne 0 ];then
 echo -e " $R mysql is not installed " &>>LOG_FILE
+fi
 dnf install mysql-server -y &>>$LOG_FILE
 VALIDATE $? "Installing MySQL Server"
 
 systemctl is-enabled mysqld &>>LOG_FILE
 if [ $? -ne 0 ];then
 echo -e " $R mysql is not enabled " &>>LOG_FILE
+fi
 systemctl enable mysqld &>>$LOG_FILE
 VALIDATE $? "Enabled MySQL Server"
 
 systemctl status mysqld &>>$LOG_FILE
 if [ $? -ne 0 ];then
 echo -e " $R mysql is not started " &>>LOG_FILE
+fi
 systemctl start mysqld &>>$LOG_FILE
 VALIDATE $? "Started MySQL server"
 
