@@ -33,13 +33,25 @@ VALIDATE(){
 echo "Script started executing at: $(date)" | tee -a $LOG_FILE
 
 CHECK_ROOT
-
+dnf list installed mysql 
+if [ $? -ne 0 ];then
+echo " mysql is not installed " &>>LOG_FILE
 dnf install mysql-server -y &>>$LOG_FILE
 VALIDATE $? "Installing MySQL Server"
 
+systemctl status mysqld &>>$LOG_FILE
+if [ $? -ne 0 ];then
+echo " mysql is not started " &>>LOG_FILE
+
+systemctl is-enabled mysqld &>>LOG_FILE
+if [ $? -ne 0 ];then
+echo " mysql is not enabled " &>>LOG_FILE
 systemctl enable mysqld &>>$LOG_FILE
 VALIDATE $? "Enabled MySQL Server"
 
+systemctl status mysqld &>>$LOG_FILE
+if [ $? -ne 0 ];then
+echo " mysql is not started " &>>LOG_FILE
 systemctl start mysqld &>>$LOG_FILE
 VALIDATE $? "Started MySQL server"
 
