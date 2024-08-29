@@ -36,23 +36,30 @@ CHECK_ROOT
 dnf list installed mysql 
 if [ $? -ne 0 ];then
 echo -e " $R mysql is not installed " &>>LOG_FILE
-fi
 dnf install mysql-server -y &>>$LOG_FILE
 VALIDATE $? "Installing MySQL Server"
+else
+echo " mysql server is already installed nothing to do " &>>LOG_FILE
+fi
+
 
 systemctl is-enabled mysqld &>>LOG_FILE
 if [ $? -ne 0 ];then
 echo -e " $R mysql is not enabled " &>>LOG_FILE
-fi
 systemctl enable mysqld &>>$LOG_FILE
 VALIDATE $? "Enabled MySQL Server"
+else
+echo " mysql server is enabled nothing to do " &>>LOG_FILE
+fi
 
 systemctl status mysqld &>>$LOG_FILE
 if [ $? -ne 0 ];then
 echo -e " $R mysql is not started " &>>LOG_FILE
-fi
 systemctl start mysqld &>>$LOG_FILE
 VALIDATE $? "Started MySQL server"
+else
+echo " mysql server is enabled nothing to do " &>>LOG_FILE
+fi
 
 mysql -h mysql.daws81s.online -u root -pExpenseApp@1 -e 'show databases;' &>>$LOG_FILE
 if [ $? -ne 0 ]
