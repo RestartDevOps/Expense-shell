@@ -8,6 +8,7 @@ SCRIPT_NAME=$(echo $0 | cut -d "." -f1)
 TIMESTAMP=$(date +%Y-%m-%d-%H-%M-%S)
 LOG_FILE="$LOGS_FOLDER/$SCRIPT_NAME-$TIMESTAMP.log"
 mkdir -p $LOGS_FOLDER
+SERVICE_NAME="mysqld"
 
 USERID=$(id -u)
 R="\e[31m"
@@ -45,11 +46,16 @@ else
 echo " mysql server is installed nothing to do " &>>LOG_FILE
 fi
 
-systemctl is-enabled mysqld &>>$LOG_FILE
+systemctl is-enabled "$SERVICE_NAME" &>> "$LOG_FILE"
 if [ $? -ne 0 ];then
-echo  " mysql is not enabled " &>>LOG_FILE
-systemctl enable mysqld &>>$LOG_FILE
-VALIDATE $? "Enabled MySQL Server"
+echo  " $SERVICE_NAME is not enabled " &>>LOG_FILE
+systemctl enable $SERVICE_NAME &>>$LOG_FILE
+VALIDATE $? "Enabled $SERVICE_NAME Server"
+if [ $? -eq 0 ]; then
+        echo "Enabled MySQL Server" &>> "$LOG_FILE"
+    else
+        echo "Failed to enable MySQL Server" &>> "$LOG_FILE"
+    fi
 else
 echo " mysql server is enabled nothing to do " &>>LOG_FILE
 fi
